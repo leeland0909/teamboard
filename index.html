@@ -1,0 +1,435 @@
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TeamBoard</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📋</text></svg>">
+<style>
+:root{--bg:#f1f5f9;--card:#fff;--line:#e2e8f0;--soft:#f1f5f9;--text:#0f172a;--muted:#64748b;--faint:#94a3b8;--blue:#2563eb;--blue-d:#1d4ed8;--green:#10b981;--amber:#f59e0b;--amber-d:#d97706;--red:#ef4444}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+
+/* ---------- Login ---------- */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 30% 20%,#1e3a8a,#020617 60%);padding:20px}
+.login-card{background:#fff;border-radius:24px;padding:32px;width:100%;max-width:420px;box-shadow:0 30px 60px rgba(0,0,0,.45);animation:up .35s ease}
+@keyframes up{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.logo{width:56px;height:56px;border-radius:16px;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:22px}
+h1{margin:0;font-size:28px;letter-spacing:-.02em}
+.sub{color:var(--muted);margin:8px 0 24px;line-height:1.5}
+label.lbl{display:block;font-size:13px;font-weight:600;color:#334155;margin:0 0 6px 2px}
+.field{width:100%;border:1px solid var(--line);border-radius:14px;padding:13px 15px;outline:none;margin-bottom:14px;background:#fff;transition:.15s}
+.field:focus{border-color:var(--blue);box-shadow:0 0 0 4px #dbeafe}
+.btn{border:0;border-radius:14px;padding:12px 18px;font-weight:600;background:var(--blue);color:#fff;transition:.15s;display:inline-flex;align-items:center;justify-content:center;gap:8px;white-space:nowrap}
+.btn:hover{background:var(--blue-d)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn.full{width:100%}
+.btn.dark{background:#0f172a}.btn.dark:hover{background:#1e293b}
+.btn.amber{background:var(--amber)}.btn.amber:hover{background:var(--amber-d)}
+.error{color:var(--red);font-size:14px;min-height:20px;margin-top:8px}
+.hint{font-size:12px;color:var(--faint);margin-top:14px;line-height:1.5}
+
+/* ---------- Header ---------- */
+header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:10}
+.head{max-width:1500px;margin:0 auto;padding:0 20px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .logo{width:40px;height:40px;border-radius:12px;font-size:20px;margin:0}
+.brand b{display:block;font-size:16px}
+.status{font-size:12px;display:flex;align-items:center;gap:6px;color:#059669}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pulse 2s infinite}
+.status.off{color:var(--red)}.status.off .dot{background:var(--red);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
+.user{display:flex;align-items:center;gap:8px}
+.chip{background:var(--soft);border-radius:12px;padding:8px 12px;font-size:14px}
+.icon-btn{border:0;background:transparent;border-radius:10px;padding:7px 9px;color:var(--faint);line-height:1;font-size:15px;transition:.15s}
+.icon-btn:hover{background:var(--soft);color:var(--muted)}
+.icon-btn.del:hover{color:var(--red);background:#fef2f2}
+
+/* ---------- Layout ---------- */
+main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;padding:24px 20px 70px;max-width:1500px;margin:0 auto}
+@media(max-width:1000px){main{grid-template-columns:1fr}}
+.col{display:flex;flex-direction:column;gap:18px;min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+
+/* ---------- Hero ---------- */
+.hero{background:linear-gradient(135deg,#2563eb,#4338ca);color:#fff;border-radius:24px;padding:24px;box-shadow:0 10px 25px rgba(37,99,235,.25)}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.hero small{color:#bfdbfe}
+.hero h2{margin:4px 0 0;font-size:24px}
+.stat{background:rgba(255,255,255,.12);border-radius:16px;padding:10px 16px;font-size:14px}
+.bar{height:8px;background:rgba(255,255,255,.2);border-radius:99px;margin-top:20px;overflow:hidden}
+.bar div{height:100%;background:#34d399;border-radius:99px;transition:width .5s ease}
+.members{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+.member{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,.12);border-radius:99px;padding:4px 10px 4px 4px;font-size:13px}
+.avatar{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;position:relative}
+.avatar i{position:absolute;right:-1px;bottom:-1px;width:9px;height:9px;border-radius:50%;background:#94a3b8;border:2px solid #3b5bdb}
+.avatar i.on{background:#34d399}
+
+/* ---------- Formular ---------- */
+.add{display:flex;gap:10px;padding:16px;flex-wrap:wrap}
+.add .field{margin:0;flex:1;min-width:200px}
+.add select.field{flex:0 0 auto;min-width:160px;width:auto;cursor:pointer}
+.row-title{display:flex;justify-content:space-between;align-items:center;padding:0 4px}
+.row-title h3{margin:0;font-size:20px}
+.toggle{font-size:14px;color:var(--muted);display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--blue);width:16px;height:16px}
+
+/* ---------- Gruppen & Aufgaben ---------- */
+.group{overflow:hidden}
+.g-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid #f1f5f9}
+.g-name{display:flex;align-items:center;gap:10px;border:0;background:none;padding:0;font-weight:700;font-size:16px;text-align:left}
+.g-name .arrow{color:var(--faint);transition:transform .2s;display:inline-block;width:14px}
+.g-name.closed .arrow{transform:rotate(-90deg)}
+.cdot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+.count{font-size:12px;font-weight:600;background:var(--soft);color:var(--muted);border-radius:99px;padding:3px 9px}
+.empty{padding:26px;text-align:center;color:var(--faint);font-size:14px}
+.task{display:flex;align-items:center;gap:12px;padding:13px 18px;border-top:1px solid #f1f5f9;transition:background .15s}
+.task:first-child{border-top:0}
+.task:hover{background:#f8fafc}
+.check{width:24px;height:24px;border-radius:50%;border:2px solid #cbd5e1;background:#fff;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:900;padding:0;transition:.15s}
+.check:hover{border-color:var(--blue)}
+.check.done{background:var(--green);border-color:var(--green)}
+.t-body{flex:1;min-width:0}
+.t-title{font-weight:500;word-wrap:break-word;overflow-wrap:anywhere}
+.task.done .t-title{text-decoration:line-through;color:var(--faint)}
+.t-meta{font-size:12px;color:var(--faint);margin-top:3px}
+.task .icon-btn.del{opacity:0}
+.task:hover .icon-btn.del,.note:hover .icon-btn.del{opacity:1}
+@media(hover:none){.task .icon-btn.del,.note .icon-btn.del{opacity:1}}
+.add-group{display:flex;gap:10px;padding:12px;border:1px dashed #cbd5e1;background:#fff;border-radius:24px}
+.add-group input{flex:1;border:0;outline:none;padding:8px 10px;background:transparent;min-width:0}
+.swatches{display:flex;gap:5px;align-items:center}
+.sw{width:18px;height:18px;border-radius:50%;border:2px solid transparent;padding:0;cursor:pointer}
+.sw.sel{border-color:#0f172a;transform:scale(1.15)}
+
+/* ---------- Notizen ---------- */
+aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
+@media(max-width:1000px){aside{position:static;height:auto}}
+.notes{height:100%;display:flex;flex-direction:column;overflow:hidden}
+.n-head{padding:18px 20px;border-bottom:1px solid #f1f5f9;display:flex;gap:12px;align-items:center}
+.n-head .logo{width:40px;height:40px;border-radius:12px;font-size:19px;margin:0;background:#fef3c7}
+.n-head b{display:block}.n-head small{color:var(--faint);font-size:12px}
+.n-form{padding:14px;border-bottom:1px solid #f1f5f9}
+.n-form textarea{width:100%;resize:none;border:0;border-radius:16px;background:var(--soft);padding:12px 14px;outline:none;margin-bottom:8px}
+.n-form textarea:focus{box-shadow:0 0 0 4px #fef3c7}
+.n-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+@media(max-width:1000px){.n-list{max-height:none}}
+.note{background:#fffbeb;border:1px solid #fef3c7;border-radius:16px;padding:14px}
+.note-top{display:flex;justify-content:space-between;gap:10px}
+.note p{margin:0;font-size:14px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
+.note-meta{display:flex;justify-content:space-between;font-size:12px;color:#b45309;opacity:.75;margin-top:10px}
+.note .icon-btn{color:#b45309;padding:2px 6px}
+
+.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:13px;border-radius:99px;padding:9px 16px;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:50;transition:opacity .3s}
+.share{font-size:13px}
+</style>
+</head>
+<body>
+
+<!-- ===================== LOGIN ===================== -->
+<div id="login" class="hidden">
+  <form class="login-card" id="loginForm">
+    <div class="logo">👥</div>
+    <h1>Willkommen im TeamBoard</h1>
+    <p class="sub">Kein Passwort, keine Registrierung. Gib einfach deinen Namen ein.</p>
+    <label class="lbl" for="nameInput">Dein Name</label>
+    <input class="field" id="nameInput" maxlength="32" placeholder="z. B. Leeland" autocomplete="off">
+    <div id="codeWrap">
+      <label class="lbl" for="codeInput">Teamcode</label>
+      <input class="field" id="codeInput" placeholder="Steht im Einladungslink" autocomplete="off">
+    </div>
+    <button class="btn full" id="loginBtn">TeamBoard öffnen</button>
+    <div class="error" id="loginError"></div>
+    <p class="hint">Für euren internen Projektkreis. Jeder hat dieselben Rechte und sieht alle Änderungen live.</p>
+  </form>
+</div>
+
+<!-- ===================== APP ===================== -->
+<div id="app" class="hidden">
+  <header>
+    <div class="head">
+      <div class="brand">
+        <div class="logo">📋</div>
+        <div><b>TeamBoard</b><span class="status" id="status"><span class="dot"></span><span id="statusText">Verbinde…</span></span></div>
+      </div>
+      <div class="user">
+        <button class="icon-btn share" id="shareBtn" title="Einladungslink kopieren">🔗 Link kopieren</button>
+        <span class="chip">👤 <span id="userName"></span></span>
+        <button class="icon-btn" id="logoutBtn" title="Abmelden">⎋</button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="col">
+      <div class="hero">
+        <div class="hero-top">
+          <div><small>Gemeinsamer Projektstand</small><h2 id="hello"></h2></div>
+          <div class="stat" id="stat"></div>
+        </div>
+        <div class="bar"><div id="progress" style="width:0"></div></div>
+        <div class="members" id="members"></div>
+      </div>
+
+      <form class="card add" id="taskForm">
+        <input class="field" id="taskInput" maxlength="300" placeholder="Neue Aufgabe eingeben…" autocomplete="off">
+        <select class="field" id="groupSelect"></select>
+        <button class="btn">＋ Hinzufügen</button>
+      </form>
+
+      <div class="row-title">
+        <h3>Aufgaben</h3>
+        <label class="toggle"><input type="checkbox" id="showDone"> Erledigte anzeigen</label>
+      </div>
+
+      <div class="col" id="groups"></div>
+
+      <form class="add-group" id="groupForm">
+        <input id="groupInput" maxlength="40" placeholder="Neue Gruppe, z. B. Doku" autocomplete="off">
+        <div class="swatches" id="swatches"></div>
+        <button class="btn dark">＋ Gruppe</button>
+      </form>
+    </section>
+
+    <aside>
+      <div class="card notes">
+        <div class="n-head"><div class="logo">📝</div><div><b>Team-Notizen</b><small>Für Infos, Fragen und Absprachen</small></div></div>
+        <form class="n-form" id="noteForm">
+          <textarea id="noteInput" rows="3" maxlength="2000" placeholder="Notiz für das Team schreiben… (Strg+Enter zum Senden)"></textarea>
+          <button class="btn amber full">Notiz veröffentlichen</button>
+        </form>
+        <div class="n-list" id="notes"></div>
+      </div>
+    </aside>
+  </main>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script>
+/* =====================================================================
+   KONFIGURATION – nur diese zwei Zeilen anpassen
+   (Supabase -> Project Settings -> API Keys / Data API)
+   ===================================================================== */
+const SUPABASE_URL = "https://nrxmbzkdgxyvjbzfoskr.supabase.co";          // z. B. https://abcdefgh.supabase.co
+const SUPABASE_KEY = "sb_publishable_0cBCE3afcPFZKspRA1lU5A_Z7qPQwGb"; // sb_publishable_... oder eyJ...
+
+/* ===================================================================== */
+const POLL_MS = 3000;
+const COLORS = ["#2563eb","#7c3aed","#059669","#ea580c","#db2777","#0891b2","#ca8a04"];
+const $ = id => document.getElementById(id);
+
+const state = {
+  name: localStorage.getItem("tb-name") || "",
+  code: localStorage.getItem("tb-code") || "",
+  board: null, lastJson: "",
+  collapsed: JSON.parse(localStorage.getItem("tb-collapsed") || "{}"),
+  showDone: localStorage.getItem("tb-showdone") !== "0",
+  selectedGroup: localStorage.getItem("tb-selgroup") || "",
+  color: COLORS[0], timer: null, busy: false
+};
+
+/* ---------- Teamcode aus Link übernehmen: ...index.html#code=XYZ ---------- */
+const hashCode = new URLSearchParams(location.hash.slice(1)).get("code");
+if (hashCode) {
+  if (hashCode !== state.code) { state.code = hashCode; localStorage.setItem("tb-code", hashCode); }
+  history.replaceState(null, "", location.pathname + location.search);
+}
+
+/* ---------- Hilfsfunktionen ---------- */
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const fmt = iso => new Date(iso).toLocaleString("de-DE",{day:"2-digit",month:"2-digit",hour:"2-digit",minute:"2-digit"});
+function toast(msg){ const t=$("toast"); t.textContent=msg; t.classList.remove("hidden"); clearTimeout(t._h); t._h=setTimeout(()=>t.classList.add("hidden"),2600); }
+function setOnline(ok, text){ $("status").classList.toggle("off",!ok); $("statusText").textContent=text; }
+const configured = () => SUPABASE_URL.startsWith("http") && !SUPABASE_KEY.startsWith("HIER");
+
+async function rpc(fn, params){
+  const headers = {"Content-Type":"application/json","apikey":SUPABASE_KEY};
+  if (SUPABASE_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SUPABASE_KEY;
+  const res = await fetch(SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/rpc/" + fn, {method:"POST", headers, body:JSON.stringify(params)});
+  const text = await res.text();
+  let data = null; try { data = text ? JSON.parse(text) : null; } catch {}
+  if (!res.ok) { const e = new Error((data && data.message) || text || res.statusText); e.status = res.status; throw e; }
+  return data;
+}
+
+/* ---------- Login ---------- */
+function showLogin(msg){
+  stopPolling();
+  $("app").classList.add("hidden"); $("login").classList.remove("hidden");
+  $("nameInput").value = state.name; $("codeInput").value = state.code;
+  $("codeWrap").classList.toggle("hidden", !!state.code && !msg);
+  $("loginError").textContent = msg || (configured() ? "" : "⚠️ Setup fehlt: SUPABASE_URL und SUPABASE_KEY in index.html eintragen.");
+  (state.name ? $("codeInput") : $("nameInput")).focus();
+  if (state.name && state.code) $("nameInput").focus();
+}
+
+$("loginForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("nameInput").value.trim(), code = $("codeInput").value.trim();
+  if (!name) { $("loginError").textContent = "Bitte gib deinen Namen ein."; return; }
+  if (!code) { $("codeWrap").classList.remove("hidden"); $("loginError").textContent = "Bitte gib den Teamcode ein."; return; }
+  $("loginBtn").disabled = true; $("loginError").textContent = "";
+  try {
+    await rpc("tb_login", {p_code:code, p_name:name});
+    state.name = name; state.code = code;
+    localStorage.setItem("tb-name", name); localStorage.setItem("tb-code", code);
+    startApp();
+  } catch (err) {
+    $("codeWrap").classList.remove("hidden");
+    $("loginError").textContent = err.message.includes("INVALID_CODE") ? "Der Teamcode ist falsch." :
+      err.message.includes("INVALID_NAME") ? "Name muss 1–32 Zeichen haben." :
+      "Keine Verbindung zum Server. (" + err.message + ")";
+  } finally { $("loginBtn").disabled = false; }
+});
+
+$("logoutBtn").onclick = () => { localStorage.removeItem("tb-name"); state.name = ""; showLogin(); };
+$("shareBtn").onclick = async () => {
+  const link = location.href.split("#")[0] + "#code=" + encodeURIComponent(state.code);
+  try { await navigator.clipboard.writeText(link); toast("Einladungslink kopiert – einfach an das Team schicken!"); }
+  catch { prompt("Diesen Link an dein Team schicken:", link); }
+};
+
+/* ---------- App & Live-Aktualisierung ---------- */
+function startApp(){
+  $("login").classList.add("hidden"); $("app").classList.remove("hidden");
+  $("userName").textContent = state.name;
+  $("hello").textContent = "Hallo " + state.name + ", was steht als Nächstes an?";
+  $("showDone").checked = state.showDone;
+  renderSwatches();
+  refresh(); startPolling();
+}
+function startPolling(){ stopPolling(); state.timer = setInterval(() => { if (!document.hidden) refresh(); }, POLL_MS); }
+function stopPolling(){ clearInterval(state.timer); state.timer = null; }
+document.addEventListener("visibilitychange", () => { if (!document.hidden && state.timer) refresh(); });
+
+async function refresh(){
+  if (state.busy) return;
+  try {
+    const board = await rpc("tb_board", {p_code:state.code, p_name:state.name});
+    setOnline(true, "Live · " + new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));
+    const json = JSON.stringify(board);
+    if (json !== state.lastJson) { state.lastJson = json; state.board = board; render(); }
+  } catch (err) {
+    if (err.message.includes("INVALID_CODE")) { state.code = ""; localStorage.removeItem("tb-code"); showLogin("Der Teamcode ist nicht mehr gültig."); return; }
+    setOnline(false, "Offline – versuche erneut…");
+  }
+}
+
+async function act(fn, params, okMsg){
+  state.busy = true;
+  try { await rpc(fn, {p_code:state.code, ...params}); if (okMsg) toast(okMsg); }
+  catch (err) { toast("Fehler: " + err.message); }
+  finally { state.busy = false; }
+  await refresh();
+}
+
+/* ---------- Rendern ---------- */
+function render(){
+  const b = state.board; if (!b) return;
+  const total = b.tasks.length, done = b.tasks.filter(t => t.done).length;
+  $("stat").innerHTML = `<b>${done}</b> von <b>${total}</b> Aufgaben erledigt`;
+  $("progress").style.width = (total ? done/total*100 : 0) + "%";
+
+  $("members").innerHTML = b.members.map(m =>
+    `<span class="member" title="${m.online ? "online" : "offline"}"><span class="avatar">${esc(m.name[0].toUpperCase())}<i class="${m.online?"on":""}"></i></span>${esc(m.name)}</span>`).join("");
+
+  const groups = [{id:"", name:"Allgemein", color:"#2563eb"}, ...b.groups];
+  if (!groups.some(g => g.id === state.selectedGroup)) state.selectedGroup = "";
+  $("groupSelect").innerHTML = groups.map(g => `<option value="${g.id}" ${g.id===state.selectedGroup?"selected":""}>${esc(g.name)}</option>`).join("");
+
+  const sorted = [...b.tasks].sort((a,c) => a.done - c.done);
+  $("groups").innerHTML = groups.map(g => {
+    const all = sorted.filter(t => (t.group_id || "") === g.id);
+    const shown = all.filter(t => state.showDone || !t.done);
+    const closed = !!state.collapsed[g.id || "_all"];
+    return `<div class="card group">
+      <div class="g-head">
+        <button class="g-name ${closed?"closed":""}" data-act="collapse" data-id="${g.id}">
+          <span class="arrow">▾</span><span class="cdot" style="background:${esc(g.color)}"></span>${esc(g.name)}
+          <span class="count">${all.filter(t=>t.done).length}/${all.length}</span>
+        </button>
+        ${g.id ? `<button class="icon-btn del" style="opacity:1" title="Gruppe löschen" data-act="delgroup" data-id="${g.id}" data-name="${esc(g.name)}">🗑</button>` : ""}
+      </div>
+      ${closed ? "" : (shown.length ? shown.map(t => `
+        <div class="task ${t.done?"done":""}">
+          <button class="check ${t.done?"done":""}" data-act="toggle" data-id="${t.id}" title="${t.done?"Wieder öffnen":"Abhaken"}">${t.done?"✓":""}</button>
+          <div class="t-body"><div class="t-title">${esc(t.title)}</div>
+            <div class="t-meta">von ${esc(t.created_by||"?")}${t.done && t.done_by ? " · erledigt von " + esc(t.done_by) : ""}</div></div>
+          <button class="icon-btn del" title="Aufgabe löschen" data-act="deltask" data-id="${t.id}">🗑</button>
+        </div>`).join("") : `<div class="empty">Keine ${all.length ? "offenen " : ""}Aufgaben in dieser Gruppe</div>`)}
+    </div>`;
+  }).join("");
+
+  $("notes").innerHTML = b.notes.length ? b.notes.map(n => `
+    <div class="note"><div class="note-top"><p>${esc(n.text)}</p>
+      <button class="icon-btn del" title="Notiz löschen" data-act="delnote" data-id="${n.id}">✕</button></div>
+      <div class="note-meta"><span>${esc(n.author||"?")}</span><span>${fmt(n.created_at)}</span></div></div>`).join("")
+    : `<div class="empty">📝<br>Noch keine Notizen vorhanden.</div>`;
+}
+
+function renderSwatches(){
+  $("swatches").innerHTML = COLORS.map(c => `<button type="button" class="sw ${c===state.color?"sel":""}" style="background:${c}" data-color="${c}"></button>`).join("");
+}
+$("swatches").addEventListener("click", e => { const c = e.target.dataset.color; if (c) { state.color = c; renderSwatches(); } });
+
+/* ---------- Aktionen ---------- */
+document.addEventListener("click", e => {
+  const el = e.target.closest("[data-act]"); if (!el) return;
+  const id = el.dataset.id;
+  switch (el.dataset.act) {
+    case "collapse": {
+      const k = id || "_all"; state.collapsed[k] = !state.collapsed[k];
+      localStorage.setItem("tb-collapsed", JSON.stringify(state.collapsed)); render(); break;
+    }
+    case "toggle": {
+      const t = state.board.tasks.find(x => x.id === id);
+      if (t) { t.done = !t.done; t.done_by = t.done ? state.name : null; render(); } // sofortiges Feedback
+      act("tb_toggle_task", {p_name:state.name, p_id:id}); break;
+    }
+    case "deltask":
+      state.board.tasks = state.board.tasks.filter(x => x.id !== id); render();
+      act("tb_delete_task", {p_id:id}); break;
+    case "delgroup":
+      if (confirm(`Gruppe „${el.dataset.name}“ löschen?\nDie Aufgaben wandern nach „Allgemein“.`))
+        act("tb_delete_group", {p_id:id}, "Gruppe gelöscht");
+      break;
+    case "delnote":
+      state.board.notes = state.board.notes.filter(x => x.id !== id); render();
+      act("tb_delete_note", {p_id:id}); break;
+  }
+});
+
+$("showDone").onchange = e => { state.showDone = e.target.checked; localStorage.setItem("tb-showdone", state.showDone ? "1" : "0"); render(); };
+$("groupSelect").onchange = e => { state.selectedGroup = e.target.value; localStorage.setItem("tb-selgroup", e.target.value); };
+
+$("taskForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const title = $("taskInput").value.trim(); if (!title) return;
+  $("taskInput").value = "";
+  await act("tb_add_task", {p_name:state.name, p_title:title, p_group:state.selectedGroup || null});
+  $("taskInput").focus();
+});
+
+$("groupForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const name = $("groupInput").value.trim(); if (!name) return;
+  $("groupInput").value = "";
+  await act("tb_add_group", {p_name:state.name, p_group_name:name, p_color:state.color}, "Gruppe erstellt");
+});
+
+$("noteForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const text = $("noteInput").value.trim(); if (!text) return;
+  $("noteInput").value = "";
+  await act("tb_add_note", {p_name:state.name, p_text:text});
+});
+$("noteInput").addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) $("noteForm").requestSubmit(); });
+
+/* ---------- Start ---------- */
+if (state.name && state.code && configured()) startApp(); else showLogin();
+</script>
+</body>
+</html>
