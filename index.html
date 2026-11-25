@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -28,6 +29,8 @@ label.lbl{display:block;font-size:13px;font-weight:600;color:#334155;margin:0 0 
 .btn.full{width:100%}
 .btn.dark{background:#0f172a}.btn.dark:hover{background:#1e293b}
 .btn.amber{background:var(--amber)}.btn.amber:hover{background:var(--amber-d)}
+.btn.small{padding:9px 14px;border-radius:12px;font-size:14px}
+.btn.ghost{background:var(--soft);color:var(--muted)}.btn.ghost:hover{background:#e2e8f0}
 .error{color:var(--red);font-size:14px;min-height:20px;margin-top:8px}
 .hint{font-size:12px;color:var(--faint);margin-top:14px;line-height:1.5}
 
@@ -38,7 +41,7 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 .brand .logo{width:40px;height:40px;border-radius:12px;font-size:20px;margin:0}
 .brand b{display:block;font-size:16px}
 .status{font-size:12px;display:flex;align-items:center;gap:6px;color:#059669}
-.status .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 0 rgba(16,185,129,.6);animation:pulse 2s infinite}
+.status .dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
 .status.off{color:var(--red)}.status.off .dot{background:var(--red);animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(16,185,129,.5)}70%{box-shadow:0 0 0 7px rgba(16,185,129,0)}100%{box-shadow:0 0 0 0 rgba(16,185,129,0)}}
 .user{display:flex;align-items:center;gap:8px}
@@ -46,6 +49,7 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 .icon-btn{border:0;background:transparent;border-radius:10px;padding:7px 9px;color:var(--faint);line-height:1;font-size:15px;transition:.15s}
 .icon-btn:hover{background:var(--soft);color:var(--muted)}
 .icon-btn.del:hover{color:var(--red);background:#fef2f2}
+.icon-btn.edit:hover{color:var(--blue);background:#eff6ff}
 
 /* ---------- Layout ---------- */
 main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;padding:24px 20px 70px;max-width:1500px;margin:0 auto}
@@ -92,12 +96,21 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;padding:24p
 .check:hover{border-color:var(--blue)}
 .check.done{background:var(--green);border-color:var(--green)}
 .t-body{flex:1;min-width:0}
-.t-title{font-weight:500;word-wrap:break-word;overflow-wrap:anywhere}
+.t-title{font-weight:500;overflow-wrap:anywhere;cursor:text}
 .task.done .t-title{text-decoration:line-through;color:var(--faint)}
 .t-meta{font-size:12px;color:var(--faint);margin-top:3px}
-.task .icon-btn.del{opacity:0}
-.task:hover .icon-btn.del,.note:hover .icon-btn.del{opacity:1}
-@media(hover:none){.task .icon-btn.del,.note .icon-btn.del{opacity:1}}
+.task .icon-btn.del,.task .icon-btn.edit{opacity:0}
+.task:hover .icon-btn.del,.task:hover .icon-btn.edit,.note:hover .icon-btn.del{opacity:1}
+@media(hover:none){.task .icon-btn.del,.task .icon-btn.edit,.note .icon-btn.del{opacity:1}}
+
+/* Bearbeiten-Modus */
+.task.editing{background:#eff6ff;flex-wrap:wrap}
+.task.editing:hover{background:#eff6ff}
+.edit-title{flex:1 1 260px;margin:0;padding:9px 12px;border-radius:12px}
+.edit-group{flex:0 0 auto;width:auto;margin:0;padding:9px 12px;border-radius:12px;cursor:pointer}
+.edit-actions{display:flex;gap:6px}
+.edit-hint{flex-basis:100%;font-size:12px;color:var(--faint);padding-left:2px}
+
 .add-group{display:flex;gap:10px;padding:12px;border:1px dashed #cbd5e1;background:#fff;border-radius:24px}
 .add-group input{flex:1;border:0;outline:none;padding:8px 10px;background:transparent;min-width:0}
 .swatches{display:flex;gap:5px;align-items:center}
@@ -115,14 +128,13 @@ aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
 .n-form textarea{width:100%;resize:none;border:0;border-radius:16px;background:var(--soft);padding:12px 14px;outline:none;margin-bottom:8px}
 .n-form textarea:focus{box-shadow:0 0 0 4px #fef3c7}
 .n-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
-@media(max-width:1000px){.n-list{max-height:none}}
 .note{background:#fffbeb;border:1px solid #fef3c7;border-radius:16px;padding:14px}
 .note-top{display:flex;justify-content:space-between;gap:10px}
 .note p{margin:0;font-size:14px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}
 .note-meta{display:flex;justify-content:space-between;font-size:12px;color:#b45309;opacity:.75;margin-top:10px}
 .note .icon-btn{color:#b45309;padding:2px 6px}
 
-.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:13px;border-radius:99px;padding:9px 16px;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:50;transition:opacity .3s}
+.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:13px;border-radius:99px;padding:9px 16px;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:50}
 .share{font-size:13px}
 </style>
 </head>
@@ -210,11 +222,10 @@ aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
 
 <script>
 /* =====================================================================
-   KONFIGURATION – nur diese zwei Zeilen anpassen
-   (Supabase -> Project Settings -> API Keys / Data API)
+   KONFIGURATION – nur den KEY eintragen (URL ist schon deine)
    ===================================================================== */
-const SUPABASE_URL = "https://nrxmbzkdgxyvjbzfoskr.supabase.co";          // z. B. https://abcdefgh.supabase.co
-const SUPABASE_KEY = "sb_publishable_0cBCE3afcPFZKspRA1lU5A_Z7qPQwGb"; // sb_publishable_... oder eyJ...
+const SUPABASE_URL = "https://nrxmbzkdgxyvjbzfoskr.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0cBCE3afcPFZKspRA1lU5A_Z7qPQwGb";
 
 /* ===================================================================== */
 const POLL_MS = 3000;
@@ -224,17 +235,18 @@ const $ = id => document.getElementById(id);
 const state = {
   name: localStorage.getItem("tb-name") || "",
   code: localStorage.getItem("tb-code") || "",
-  board: null, lastJson: "",
+  board: null, lastJson: "", groups: [],
   collapsed: JSON.parse(localStorage.getItem("tb-collapsed") || "{}"),
   showDone: localStorage.getItem("tb-showdone") !== "0",
   selectedGroup: localStorage.getItem("tb-selgroup") || "",
-  color: COLORS[0], timer: null, busy: false
+  color: COLORS[0], timer: null, busy: false,
+  editing: null   // ID der Aufgabe, die gerade bearbeitet wird
 };
 
-/* ---------- Teamcode aus Link übernehmen: ...index.html#code=XYZ ---------- */
+/* ---------- Teamcode aus Link übernehmen: ...#code=XYZ ---------- */
 const hashCode = new URLSearchParams(location.hash.slice(1)).get("code");
 if (hashCode) {
-  if (hashCode !== state.code) { state.code = hashCode; localStorage.setItem("tb-code", hashCode); }
+  state.code = hashCode; localStorage.setItem("tb-code", hashCode);
   history.replaceState(null, "", location.pathname + location.search);
 }
 
@@ -248,7 +260,7 @@ const configured = () => SUPABASE_URL.startsWith("http") && !SUPABASE_KEY.starts
 async function rpc(fn, params){
   const headers = {"Content-Type":"application/json","apikey":SUPABASE_KEY};
   if (SUPABASE_KEY.startsWith("eyJ")) headers.Authorization = "Bearer " + SUPABASE_KEY;
-  const res = await fetch(SUPABASE_URL.replace(/\/$/,"") + "/rest/v1/rpc/" + fn, {method:"POST", headers, body:JSON.stringify(params)});
+  const res = await fetch(new URL(SUPABASE_URL.trim()).origin + "/rest/v1/rpc/" + fn, {method:"POST", headers, body:JSON.stringify(params)});
   const text = await res.text();
   let data = null; try { data = text ? JSON.parse(text) : null; } catch {}
   if (!res.ok) { const e = new Error((data && data.message) || text || res.statusText); e.status = res.status; throw e; }
@@ -261,9 +273,8 @@ function showLogin(msg){
   $("app").classList.add("hidden"); $("login").classList.remove("hidden");
   $("nameInput").value = state.name; $("codeInput").value = state.code;
   $("codeWrap").classList.toggle("hidden", !!state.code && !msg);
-  $("loginError").textContent = msg || (configured() ? "" : "⚠️ Setup fehlt: SUPABASE_URL und SUPABASE_KEY in index.html eintragen.");
-  (state.name ? $("codeInput") : $("nameInput")).focus();
-  if (state.name && state.code) $("nameInput").focus();
+  $("loginError").textContent = msg || (configured() ? "" : "⚠️ Setup fehlt: SUPABASE_KEY in index.html eintragen.");
+  $("nameInput").focus();
 }
 
 $("loginForm").addEventListener("submit", async e => {
@@ -311,7 +322,11 @@ async function refresh(){
     const board = await rpc("tb_board", {p_code:state.code, p_name:state.name});
     setOnline(true, "Live · " + new Date().toLocaleTimeString("de-DE",{hour:"2-digit",minute:"2-digit",second:"2-digit"}));
     const json = JSON.stringify(board);
-    if (json !== state.lastJson) { state.lastJson = json; state.board = board; render(); }
+    if (json !== state.lastJson) {
+      state.lastJson = json; state.board = board;
+      // Während jemand tippt, nicht neu zeichnen (sonst geht die Eingabe verloren)
+      if (!state.editing) render();
+    }
   } catch (err) {
     if (err.message.includes("INVALID_CODE")) { state.code = ""; localStorage.removeItem("tb-code"); showLogin("Der Teamcode ist nicht mehr gültig."); return; }
     setOnline(false, "Offline – versuche erneut…");
@@ -321,12 +336,41 @@ async function refresh(){
 async function act(fn, params, okMsg){
   state.busy = true;
   try { await rpc(fn, {p_code:state.code, ...params}); if (okMsg) toast(okMsg); }
-  catch (err) { toast("Fehler: " + err.message); }
+  catch (err) {
+    toast(err.message.includes("Could not find the function")
+      ? "Fehler: Datenbank-Update fehlt (update.sql in Supabase ausführen)"
+      : "Fehler: " + err.message);
+  }
   finally { state.busy = false; }
   await refresh();
 }
 
 /* ---------- Rendern ---------- */
+function groupOptions(selectedId){
+  return state.groups.map(g => `<option value="${g.id}" ${g.id===selectedId?"selected":""}>${esc(g.name)}</option>`).join("");
+}
+
+function taskHtml(t){
+  if (state.editing === t.id) {
+    return `<div class="task editing">
+      <input class="field edit-title" id="editTitle" maxlength="300" value="${esc(t.title)}">
+      <select class="field edit-group" id="editGroup">${groupOptions(t.group_id || "")}</select>
+      <div class="edit-actions">
+        <button class="btn small" data-act="save" data-id="${t.id}">✓ Speichern</button>
+        <button class="btn small ghost" data-act="cancel">Abbrechen</button>
+      </div>
+      <div class="edit-hint">Enter = speichern · Esc = abbrechen</div>
+    </div>`;
+  }
+  return `<div class="task ${t.done?"done":""}">
+    <button class="check ${t.done?"done":""}" data-act="toggle" data-id="${t.id}" title="${t.done?"Wieder öffnen":"Abhaken"}">${t.done?"✓":""}</button>
+    <div class="t-body"><div class="t-title" data-dbl="edit" data-id="${t.id}" title="Doppelklick zum Bearbeiten">${esc(t.title)}</div>
+      <div class="t-meta">von ${esc(t.created_by||"?")}${t.done && t.done_by ? " · erledigt von " + esc(t.done_by) : ""}</div></div>
+    <button class="icon-btn edit" title="Aufgabe bearbeiten" data-act="edit" data-id="${t.id}">✏️</button>
+    <button class="icon-btn del" title="Aufgabe löschen" data-act="deltask" data-id="${t.id}">🗑</button>
+  </div>`;
+}
+
 function render(){
   const b = state.board; if (!b) return;
   const total = b.tasks.length, done = b.tasks.filter(t => t.done).length;
@@ -336,14 +380,17 @@ function render(){
   $("members").innerHTML = b.members.map(m =>
     `<span class="member" title="${m.online ? "online" : "offline"}"><span class="avatar">${esc(m.name[0].toUpperCase())}<i class="${m.online?"on":""}"></i></span>${esc(m.name)}</span>`).join("");
 
-  const groups = [{id:"", name:"Allgemein", color:"#2563eb"}, ...b.groups];
-  if (!groups.some(g => g.id === state.selectedGroup)) state.selectedGroup = "";
-  $("groupSelect").innerHTML = groups.map(g => `<option value="${g.id}" ${g.id===state.selectedGroup?"selected":""}>${esc(g.name)}</option>`).join("");
+  state.groups = [{id:"", name:"Allgemein", color:"#2563eb"}, ...b.groups];
+  if (!state.groups.some(g => g.id === state.selectedGroup)) state.selectedGroup = "";
+  $("groupSelect").innerHTML = groupOptions(state.selectedGroup);
+
+  // Falls die bearbeitete Aufgabe inzwischen gelöscht wurde
+  if (state.editing && !b.tasks.some(t => t.id === state.editing)) state.editing = null;
 
   const sorted = [...b.tasks].sort((a,c) => a.done - c.done);
-  $("groups").innerHTML = groups.map(g => {
+  $("groups").innerHTML = state.groups.map(g => {
     const all = sorted.filter(t => (t.group_id || "") === g.id);
-    const shown = all.filter(t => state.showDone || !t.done);
+    const shown = all.filter(t => state.showDone || !t.done || t.id === state.editing);
     const closed = !!state.collapsed[g.id || "_all"];
     return `<div class="card group">
       <div class="g-head">
@@ -351,15 +398,9 @@ function render(){
           <span class="arrow">▾</span><span class="cdot" style="background:${esc(g.color)}"></span>${esc(g.name)}
           <span class="count">${all.filter(t=>t.done).length}/${all.length}</span>
         </button>
-        ${g.id ? `<button class="icon-btn del" style="opacity:1" title="Gruppe löschen" data-act="delgroup" data-id="${g.id}" data-name="${esc(g.name)}">🗑</button>` : ""}
+        ${g.id ? `<button class="icon-btn del" title="Gruppe löschen" data-act="delgroup" data-id="${g.id}" data-name="${esc(g.name)}">🗑</button>` : ""}
       </div>
-      ${closed ? "" : (shown.length ? shown.map(t => `
-        <div class="task ${t.done?"done":""}">
-          <button class="check ${t.done?"done":""}" data-act="toggle" data-id="${t.id}" title="${t.done?"Wieder öffnen":"Abhaken"}">${t.done?"✓":""}</button>
-          <div class="t-body"><div class="t-title">${esc(t.title)}</div>
-            <div class="t-meta">von ${esc(t.created_by||"?")}${t.done && t.done_by ? " · erledigt von " + esc(t.done_by) : ""}</div></div>
-          <button class="icon-btn del" title="Aufgabe löschen" data-act="deltask" data-id="${t.id}">🗑</button>
-        </div>`).join("") : `<div class="empty">Keine ${all.length ? "offenen " : ""}Aufgaben in dieser Gruppe</div>`)}
+      ${closed ? "" : (shown.length ? shown.map(taskHtml).join("") : `<div class="empty">Keine ${all.length ? "offenen " : ""}Aufgaben in dieser Gruppe</div>`)}
     </div>`;
   }).join("");
 
@@ -368,12 +409,45 @@ function render(){
       <button class="icon-btn del" title="Notiz löschen" data-act="delnote" data-id="${n.id}">✕</button></div>
       <div class="note-meta"><span>${esc(n.author||"?")}</span><span>${fmt(n.created_at)}</span></div></div>`).join("")
     : `<div class="empty">📝<br>Noch keine Notizen vorhanden.</div>`;
+
+  if (state.editing) {
+    const inp = $("editTitle");
+    if (inp && document.activeElement !== inp && document.activeElement?.id !== "editGroup") {
+      inp.focus(); inp.setSelectionRange(inp.value.length, inp.value.length);
+    }
+  }
 }
 
 function renderSwatches(){
   $("swatches").innerHTML = COLORS.map(c => `<button type="button" class="sw ${c===state.color?"sel":""}" style="background:${c}" data-color="${c}"></button>`).join("");
 }
 $("swatches").addEventListener("click", e => { const c = e.target.dataset.color; if (c) { state.color = c; renderSwatches(); } });
+
+/* ---------- Bearbeiten ---------- */
+function startEdit(id){ state.editing = id; render(); }
+function cancelEdit(){ state.editing = null; render(); }
+function saveEdit(){
+  const id = state.editing; if (!id) return;
+  const title = $("editTitle").value.trim();
+  const group = $("editGroup").value;
+  if (!title) { toast("Die Aufgabe darf nicht leer sein."); $("editTitle").focus(); return; }
+  const t = state.board.tasks.find(x => x.id === id);
+  state.editing = null;
+  if (t && t.title === title && (t.group_id || "") === group) { render(); return; } // nichts geändert
+  if (t) { t.title = title; t.group_id = group || null; }
+  render();
+  act("tb_update_task", {p_id:id, p_title:title, p_group:group || null}, "Aufgabe gespeichert");
+}
+
+document.addEventListener("dblclick", e => {
+  const el = e.target.closest("[data-dbl='edit']"); if (el) startEdit(el.dataset.id);
+});
+document.addEventListener("keydown", e => {
+  if (!state.editing) return;
+  if (e.target.id !== "editTitle" && e.target.id !== "editGroup") return;
+  if (e.key === "Enter") { e.preventDefault(); saveEdit(); }
+  if (e.key === "Escape") { e.preventDefault(); cancelEdit(); }
+});
 
 /* ---------- Aktionen ---------- */
 document.addEventListener("click", e => {
@@ -384,12 +458,16 @@ document.addEventListener("click", e => {
       const k = id || "_all"; state.collapsed[k] = !state.collapsed[k];
       localStorage.setItem("tb-collapsed", JSON.stringify(state.collapsed)); render(); break;
     }
+    case "edit":   startEdit(id); break;
+    case "save":   saveEdit(); break;
+    case "cancel": cancelEdit(); break;
     case "toggle": {
       const t = state.board.tasks.find(x => x.id === id);
-      if (t) { t.done = !t.done; t.done_by = t.done ? state.name : null; render(); } // sofortiges Feedback
+      if (t) { t.done = !t.done; t.done_by = t.done ? state.name : null; render(); }
       act("tb_toggle_task", {p_name:state.name, p_id:id}); break;
     }
     case "deltask":
+      if (state.editing === id) state.editing = null;
       state.board.tasks = state.board.tasks.filter(x => x.id !== id); render();
       act("tb_delete_task", {p_id:id}); break;
     case "delgroup":
