@@ -50,10 +50,13 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 .icon-btn:hover{background:var(--soft);color:var(--muted)}
 .icon-btn.del:hover{color:var(--red);background:#fef2f2}
 .icon-btn.edit:hover{color:var(--blue);background:#eff6ff}
+.tree-btn{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px 12px;font-size:14px;font-weight:600;transition:.15s}
+.tree-btn:hover{border-color:var(--blue);color:var(--blue);background:#eff6ff}
 
 /* ---------- Layout ---------- */
 main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;padding:24px 20px 70px;max-width:1500px;margin:0 auto}
 @media(max-width:1000px){main{grid-template-columns:1fr}}
+@media(max-width:640px){.share,.chip{display:none}}
 .col{display:flex;flex-direction:column;gap:18px;min-width:0}
 .card{background:var(--card);border:1px solid var(--line);border-radius:24px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
 
@@ -102,8 +105,6 @@ main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:24px;padding:24p
 .task .icon-btn.del,.task .icon-btn.edit{opacity:0}
 .task:hover .icon-btn.del,.task:hover .icon-btn.edit,.note:hover .icon-btn.del{opacity:1}
 @media(hover:none){.task .icon-btn.del,.task .icon-btn.edit,.note .icon-btn.del{opacity:1}}
-
-/* Bearbeiten-Modus */
 .task.editing{background:#eff6ff;flex-wrap:wrap}
 .task.editing:hover{background:#eff6ff}
 .edit-title{flex:1 1 260px;margin:0;padding:9px 12px;border-radius:12px}
@@ -134,7 +135,47 @@ aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
 .note-meta{display:flex;justify-content:space-between;font-size:12px;color:#b45309;opacity:.75;margin-top:10px}
 .note .icon-btn{color:#b45309;padding:2px 6px}
 
-.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:13px;border-radius:99px;padding:9px 16px;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:50}
+/* ---------- Projektstruktur-Fenster ---------- */
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px);z-index:40;display:flex;align-items:center;justify-content:center;padding:20px;animation:fade .2s}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.modal-card{background:#fff;border-radius:24px;width:100%;max-width:860px;height:min(88vh,900px);display:flex;flex-direction:column;overflow:hidden;box-shadow:0 30px 70px rgba(0,0,0,.35);animation:up .25s ease}
+.m-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 22px;border-bottom:1px solid var(--line)}
+.m-head .logo{width:40px;height:40px;border-radius:12px;font-size:20px;margin:0;background:#dcfce7}
+.m-title{display:flex;gap:12px;align-items:center;min-width:0}
+.m-title b{display:block;font-size:17px}
+.m-title small{color:var(--muted);font-size:12px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tabs{display:flex;gap:4px;padding:10px 22px 0;border-bottom:1px solid var(--line)}
+.tab{border:0;background:none;padding:10px 14px;font-weight:600;color:var(--muted);border-bottom:3px solid transparent;margin-bottom:-1px}
+.tab.active{color:var(--blue);border-bottom-color:var(--blue)}
+.m-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:12px 22px;border-bottom:1px solid #f1f5f9;background:#f8fafc}
+.m-tools .field{margin:0;padding:9px 12px;border-radius:12px;font-size:14px}
+.m-tools .grow{flex:1;min-width:160px}
+.m-body{flex:1;overflow:auto;padding:14px 22px 22px}
+.m-info{font-size:13px;color:var(--muted);padding:10px 14px;border-radius:12px;background:#f8fafc;border:1px solid var(--line);margin-bottom:12px;line-height:1.5}
+.m-info.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}
+.m-info code{background:rgba(0,0,0,.06);padding:1px 5px;border-radius:5px}
+.settings{display:grid;grid-template-columns:1fr 160px auto;gap:8px;margin-bottom:12px}
+@media(max-width:640px){.settings{grid-template-columns:1fr}}
+.settings .field{margin:0;padding:9px 12px;border-radius:12px;font-size:14px}
+
+.tree{font-family:Consolas,"Cascadia Mono","Courier New",monospace;font-size:14px;line-height:1.75}
+.tree details{margin-left:0}
+.tree details>div{margin-left:11px;padding-left:12px;border-left:1px dashed #cbd5e1}
+.tree summary{cursor:pointer;list-style:none;border-radius:8px;padding:0 6px;display:flex;align-items:center;gap:6px;user-select:none}
+.tree summary::-webkit-details-marker{display:none}
+.tree summary:hover{background:#eff6ff}
+.tree summary .car{display:inline-block;width:10px;color:var(--faint);font-size:10px;transition:transform .15s}
+.tree details[open]>summary .car{transform:rotate(90deg)}
+.tree .dir{font-weight:600}
+.tree .n{color:var(--faint);font-size:12px;font-weight:400}
+.tree .file{padding:0 6px 0 22px;border-radius:8px;display:flex;gap:6px;white-space:nowrap}
+.tree .file:hover{background:#f8fafc}
+.tree mark{background:#fef08a;border-radius:3px}
+.manual-pre{font-family:Consolas,"Cascadia Mono","Courier New",monospace;font-size:14px;line-height:1.6;white-space:pre;margin:0;overflow:auto;background:#f8fafc;border:1px solid var(--line);border-radius:14px;padding:16px}
+.manual-ta{width:100%;min-height:420px;height:100%;font-family:Consolas,"Cascadia Mono","Courier New",monospace;font-size:14px;line-height:1.6;border:1px solid var(--line);border-radius:14px;padding:14px;outline:none;resize:vertical;white-space:pre;tab-size:4}
+.manual-ta:focus{border-color:var(--blue);box-shadow:0 0 0 4px #dbeafe}
+
+.toast{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;font-size:13px;border-radius:99px;padding:9px 16px;box-shadow:0 8px 20px rgba(0,0,0,.25);z-index:60}
 .share{font-size:13px}
 </style>
 </head>
@@ -167,6 +208,7 @@ aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
         <div><b>TeamBoard</b><span class="status" id="status"><span class="dot"></span><span id="statusText">Verbinde…</span></span></div>
       </div>
       <div class="user">
+        <button class="tree-btn" id="treeBtn" title="Projektstruktur anzeigen">🌳 Projektstruktur</button>
         <button class="icon-btn share" id="shareBtn" title="Einladungslink kopieren">🔗 Link kopieren</button>
         <span class="chip">👤 <span id="userName"></span></span>
         <button class="icon-btn" id="logoutBtn" title="Abmelden">⎋</button>
@@ -218,6 +260,54 @@ aside{position:sticky;top:88px;height:calc(100vh - 112px);min-height:560px}
   </main>
 </div>
 
+<!-- ===================== PROJEKTSTRUKTUR ===================== -->
+<div class="modal hidden" id="treeModal">
+  <div class="modal-card">
+    <div class="m-head">
+      <div class="m-title"><div class="logo">🌳</div><div><b>Projektstruktur</b><small id="treeSource">Lade…</small></div></div>
+      <button class="icon-btn" id="treeClose" title="Schließen (Esc)" style="font-size:20px">✕</button>
+    </div>
+    <div class="tabs">
+      <button class="tab active" data-tab="github">GitHub (automatisch)</button>
+      <button class="tab" data-tab="manual">Manuell</button>
+    </div>
+
+    <!-- GitHub-Ansicht -->
+    <div id="paneGithub" style="display:flex;flex-direction:column;flex:1;min-height:0">
+      <div class="m-tools">
+        <input class="field grow" id="treeFilter" placeholder="🔍 Datei oder Ordner suchen…" autocomplete="off">
+        <button class="btn small ghost" id="treeOpenAll">Alle aufklappen</button>
+        <button class="btn small ghost" id="treeCloseAll">Alle zuklappen</button>
+        <button class="btn small ghost" id="treeReload" title="Neu laden">⟳</button>
+        <button class="btn small ghost" id="treeSettingsBtn" title="Repository einstellen">⚙️</button>
+      </div>
+      <div class="m-body">
+        <div class="settings hidden" id="treeSettings">
+          <input class="field" id="repoInput" placeholder="besitzer/repo  oder  https://github.com/besitzer/repo" autocomplete="off">
+          <input class="field" id="branchInput" placeholder="Branch (leer = main)" autocomplete="off">
+          <button class="btn small" id="repoSave">Speichern</button>
+        </div>
+        <div id="treeMsg"></div>
+        <div class="tree" id="treeView"></div>
+      </div>
+    </div>
+
+    <!-- Manuelle Ansicht -->
+    <div id="paneManual" class="hidden" style="display:flex;flex-direction:column;flex:1;min-height:0">
+      <div class="m-tools">
+        <span style="font-size:13px;color:var(--muted);flex:1" id="manualInfo"></span>
+        <button class="btn small" id="manualEdit">✏️ Bearbeiten</button>
+        <button class="btn small hidden" id="manualSave">✓ Speichern</button>
+        <button class="btn small ghost hidden" id="manualCancel">Abbrechen</button>
+      </div>
+      <div class="m-body">
+        <pre class="manual-pre" id="manualView"></pre>
+        <textarea class="manual-ta hidden" id="manualInput" spellcheck="false" placeholder="Hier die Ordnerstruktur einfügen, z. B. die Ausgabe von:  tree /F  (Windows)"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast hidden" id="toast"></div>
 
 <script>
@@ -240,7 +330,7 @@ const state = {
   showDone: localStorage.getItem("tb-showdone") !== "0",
   selectedGroup: localStorage.getItem("tb-selgroup") || "",
   color: COLORS[0], timer: null, busy: false,
-  editing: null   // ID der Aufgabe, die gerade bearbeitet wird
+  editing: null
 };
 
 /* ---------- Teamcode aus Link übernehmen: ...#code=XYZ ---------- */
@@ -266,6 +356,7 @@ async function rpc(fn, params){
   if (!res.ok) { const e = new Error((data && data.message) || text || res.statusText); e.status = res.status; throw e; }
   return data;
 }
+const missingFn = err => /Could not find the function|does not exist/i.test(err.message);
 
 /* ---------- Login ---------- */
 function showLogin(msg){
@@ -324,7 +415,6 @@ async function refresh(){
     const json = JSON.stringify(board);
     if (json !== state.lastJson) {
       state.lastJson = json; state.board = board;
-      // Während jemand tippt, nicht neu zeichnen (sonst geht die Eingabe verloren)
       if (!state.editing) render();
     }
   } catch (err) {
@@ -337,9 +427,7 @@ async function act(fn, params, okMsg){
   state.busy = true;
   try { await rpc(fn, {p_code:state.code, ...params}); if (okMsg) toast(okMsg); }
   catch (err) {
-    toast(err.message.includes("Could not find the function")
-      ? "Fehler: Datenbank-Update fehlt (update.sql in Supabase ausführen)"
-      : "Fehler: " + err.message);
+    toast(missingFn(err) ? "Fehler: Datenbank-Update fehlt (SQL-Datei in Supabase ausführen)" : "Fehler: " + err.message);
   }
   finally { state.busy = false; }
   await refresh();
@@ -384,7 +472,6 @@ function render(){
   if (!state.groups.some(g => g.id === state.selectedGroup)) state.selectedGroup = "";
   $("groupSelect").innerHTML = groupOptions(state.selectedGroup);
 
-  // Falls die bearbeitete Aufgabe inzwischen gelöscht wurde
   if (state.editing && !b.tasks.some(t => t.id === state.editing)) state.editing = null;
 
   const sorted = [...b.tasks].sort((a,c) => a.done - c.done);
@@ -423,7 +510,7 @@ function renderSwatches(){
 }
 $("swatches").addEventListener("click", e => { const c = e.target.dataset.color; if (c) { state.color = c; renderSwatches(); } });
 
-/* ---------- Bearbeiten ---------- */
+/* ---------- Aufgaben bearbeiten ---------- */
 function startEdit(id){ state.editing = id; render(); }
 function cancelEdit(){ state.editing = null; render(); }
 function saveEdit(){
@@ -433,7 +520,7 @@ function saveEdit(){
   if (!title) { toast("Die Aufgabe darf nicht leer sein."); $("editTitle").focus(); return; }
   const t = state.board.tasks.find(x => x.id === id);
   state.editing = null;
-  if (t && t.title === title && (t.group_id || "") === group) { render(); return; } // nichts geändert
+  if (t && t.title === title && (t.group_id || "") === group) { render(); return; }
   if (t) { t.title = title; t.group_id = group || null; }
   render();
   act("tb_update_task", {p_id:id, p_title:title, p_group:group || null}, "Aufgabe gespeichert");
@@ -505,6 +592,226 @@ $("noteForm").addEventListener("submit", async e => {
   await act("tb_add_note", {p_name:state.name, p_text:text});
 });
 $("noteInput").addEventListener("keydown", e => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) $("noteForm").requestSubmit(); });
+
+/* =====================================================================
+   PROJEKTSTRUKTUR
+   Quelle 1: GitHub Action schickt bei jedem Push die Dateiliste (auch private Repos)
+   Quelle 2: Live-Abruf über die GitHub-API (nur öffentliche Repos)
+   Quelle 3: Manuell eingefügter Text
+   ===================================================================== */
+const proj = { data:null, paths:[], tab:"github", manualEditing:false };
+
+function parseRepo(s){
+  s = (s || "").trim().replace(/\.git$/,"").replace(/\/+$/,"");
+  const m = s.match(/github\.com\/([^\/\s]+)\/([^\/\s#?]+)/i) || s.match(/^([^\/\s]+)\/([^\/\s]+)$/);
+  return m ? m[1] + "/" + m[2] : "";
+}
+
+function fileIcon(name){
+  const ext = name.toLowerCase().split(".").pop();
+  if (name.startsWith(".git")) return "🔧";
+  if (ext === "py") return "🐍";
+  if (["md","txt","rst"].includes(ext)) return "📝";
+  if (["json","yml","yaml","toml","ini","cfg","env","example"].includes(ext)) return "⚙️";
+  if (["png","jpg","jpeg","gif","webp","svg","ico"].includes(ext)) return "🖼️";
+  if (["pt","pth","onnx","h5","pkl","bin"].includes(ext)) return "🧠";
+  if (["html","css","js","ts","jsx","tsx"].includes(ext)) return "🌐";
+  if (["sql","db","sqlite","csv"].includes(ext)) return "🗄️";
+  return "📄";
+}
+
+function buildTree(paths){
+  const root = {dirs:{}, files:[]};
+  for (const p of paths) {
+    const parts = p.split("/").filter(Boolean);
+    let node = root;
+    for (let i = 0; i < parts.length - 1; i++) node = node.dirs[parts[i]] ||= {dirs:{}, files:[]};
+    if (parts.length) node.files.push(parts[parts.length - 1]);
+  }
+  return root;
+}
+const countFiles = n => n.files.length + Object.values(n.dirs).reduce((s,d) => s + countFiles(d), 0);
+const sortNames = arr => arr.sort((a,b) => a.localeCompare(b, "de", {sensitivity:"base"}));
+
+function hl(name, q){
+  if (!q) return esc(name);
+  const i = name.toLowerCase().indexOf(q);
+  if (i < 0) return esc(name);
+  return esc(name.slice(0,i)) + "<mark>" + esc(name.slice(i, i+q.length)) + "</mark>" + esc(name.slice(i+q.length));
+}
+
+function treeHtml(node, depth, q, openAll){
+  let html = "";
+  for (const d of sortNames(Object.keys(node.dirs))) {
+    const child = node.dirs[d];
+    const open = openAll || depth < 1;
+    html += `<details ${open?"open":""}><summary><span class="car">▶</span>📁 <span class="dir">${hl(d,q)}/</span> <span class="n">${countFiles(child)}</span></summary><div>${treeHtml(child, depth+1, q, openAll)}</div></details>`;
+  }
+  for (const f of sortNames([...node.files])) html += `<div class="file">${fileIcon(f)} ${hl(f,q)}</div>`;
+  return html;
+}
+
+function renderTree(){
+  const q = $("treeFilter").value.trim().toLowerCase();
+  let paths = proj.paths;
+  if (q) paths = paths.filter(p => p.toLowerCase().includes(q));
+  if (!proj.paths.length) { $("treeView").innerHTML = ""; return; }
+  if (!paths.length) { $("treeView").innerHTML = `<div class="empty">Keine Treffer für „${esc(q)}“</div>`; return; }
+  const repoName = proj.data?.repo ? proj.data.repo.split("/")[1] : "Projekt";
+  $("treeView").innerHTML = `<div style="font-weight:700;padding:0 6px">📦 ${esc(repoName)}</div>` + treeHtml(buildTree(paths), 0, q, !!q);
+}
+
+function msg(html, warn){ $("treeMsg").innerHTML = html ? `<div class="m-info ${warn?"warn":""}">${html}</div>` : ""; }
+
+async function loadGithubLive(repo, branch){
+  const cacheKey = "tb-tree-" + repo + "@" + (branch || "");
+  const cached = JSON.parse(sessionStorage.getItem(cacheKey) || "null");
+  if (cached && Date.now() - cached.t < 5 * 60 * 1000) return cached;
+
+  const gh = url => fetch("https://api.github.com" + url, {headers:{Accept:"application/vnd.github+json"}});
+  let br = branch;
+  if (!br) {
+    const r = await gh(`/repos/${repo}`);
+    if (r.status === 404) throw new Error("NOT_FOUND");
+    if (r.status === 403 || r.status === 429) throw new Error("RATE_LIMIT");
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    br = (await r.json()).default_branch;
+  }
+  const r = await gh(`/repos/${repo}/git/trees/${encodeURIComponent(br)}?recursive=1`);
+  if (r.status === 404) throw new Error(branch ? "BRANCH_NOT_FOUND" : "NOT_FOUND");
+  if (r.status === 403 || r.status === 429) throw new Error("RATE_LIMIT");
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  const j = await r.json();
+  const result = { t: Date.now(), branch: br, truncated: j.truncated,
+                   paths: j.tree.filter(x => x.type === "blob").map(x => x.path) };
+  sessionStorage.setItem(cacheKey, JSON.stringify(result));
+  return result;
+}
+
+async function loadProject(force){
+  $("treeSource").textContent = "Lade…";
+  msg(""); $("treeView").innerHTML = `<div class="empty">⏳ Lade Projektstruktur…</div>`;
+  try {
+    proj.data = await rpc("tb_project_get", {p_code:state.code}) || {};
+  } catch (err) {
+    $("treeView").innerHTML = "";
+    $("treeSource").textContent = "Nicht eingerichtet";
+    msg(missingFn(err) ? "⚠️ Datenbank-Update fehlt: Bitte <code>project.sql</code> im Supabase SQL Editor ausführen." : "Fehler: " + esc(err.message), true);
+    return;
+  }
+  const d = proj.data;
+  $("repoInput").value = d.repo || "";
+  $("branchInput").value = d.branch || "";
+  renderManual();
+
+  // Quelle 1: GitHub Action
+  if (d.auto_paths) {
+    proj.paths = d.auto_paths.split(/\r?\n/).filter(Boolean);
+    $("treeSource").textContent = `Automatisch per GitHub Action · ${proj.paths.length} Dateien · Stand ${fmt(d.auto_updated_at)}`;
+    msg(d.auto_commit ? `Letzter Commit: <b>${esc(d.auto_commit)}</b>` : "");
+    renderTree(); return;
+  }
+  // Quelle 2: Live über GitHub-API
+  if (d.repo) {
+    if (force) Object.keys(sessionStorage).filter(k => k.startsWith("tb-tree-")).forEach(k => sessionStorage.removeItem(k));
+    try {
+      const r = await loadGithubLive(d.repo, d.branch);
+      proj.paths = r.paths;
+      $("treeSource").textContent = `Live von GitHub · ${d.repo} (${r.branch}) · ${r.paths.length} Dateien`;
+      msg(r.truncated ? "⚠️ Das Repo ist sehr groß – GitHub liefert nicht alle Dateien." : "", r.truncated);
+      renderTree(); return;
+    } catch (err) {
+      proj.paths = []; $("treeView").innerHTML = "";
+      $("treeSource").textContent = d.repo;
+      const reasons = {
+        NOT_FOUND: `Repository <b>${esc(d.repo)}</b> nicht gefunden – oder es ist <b>privat</b>. Für private Repos die GitHub Action einrichten (siehe Anleitung) oder den Tab <b>Manuell</b> nutzen.`,
+        BRANCH_NOT_FOUND: `Branch <b>${esc(d.branch)}</b> nicht gefunden. Über ⚙️ korrigieren.`,
+        RATE_LIMIT: `GitHub-Limit erreicht (max. 60 Abrufe pro Stunde pro Netzwerk – im Firmennetz teilen sich viele PCs dieses Limit). Lösung: GitHub Action einrichten oder später erneut versuchen.`
+      };
+      msg("⚠️ " + (reasons[err.message] || ("GitHub nicht erreichbar (" + esc(err.message) + "). Evtl. blockiert die Firmen-Firewall api.github.com.")), true);
+      return;
+    }
+  }
+  // Nichts eingerichtet
+  proj.paths = []; $("treeView").innerHTML = "";
+  $("treeSource").textContent = "Noch kein Repository eingestellt";
+  $("treeSettings").classList.remove("hidden");
+  msg("👋 Trag oben euer CalorieSnap-Repository ein (z. B. <code>leeland0909/CalorieSnap</code>) und klick auf <b>Speichern</b>. Das gilt dann für das ganze Team.");
+}
+
+/* Manuell */
+function renderManual(){
+  const d = proj.data || {};
+  $("manualView").textContent = d.manual_text || "Noch nichts eingefügt.\n\nKlick auf „Bearbeiten“ und füge die Ordnerstruktur ein.\nTipp (Windows, im Projektordner):  tree /F /A";
+  $("manualInfo").textContent = d.manual_updated_at ? `Zuletzt geändert von ${d.manual_by || "?"} · ${fmt(d.manual_updated_at)}` : "";
+}
+function setManualEditing(on){
+  proj.manualEditing = on;
+  $("manualView").classList.toggle("hidden", on);
+  $("manualInput").classList.toggle("hidden", !on);
+  $("manualEdit").classList.toggle("hidden", on);
+  $("manualSave").classList.toggle("hidden", !on);
+  $("manualCancel").classList.toggle("hidden", !on);
+  if (on) { $("manualInput").value = proj.data?.manual_text || ""; $("manualInput").focus(); }
+}
+$("manualEdit").onclick = () => setManualEditing(true);
+$("manualCancel").onclick = () => setManualEditing(false);
+$("manualSave").onclick = async () => {
+  const text = $("manualInput").value.replace(/\s+$/,"");
+  $("manualSave").disabled = true;
+  try {
+    await rpc("tb_project_set_manual", {p_code:state.code, p_name:state.name, p_text:text});
+    proj.data = {...proj.data, manual_text:text, manual_by:state.name, manual_updated_at:new Date().toISOString()};
+    renderManual(); setManualEditing(false); toast("Projektstruktur gespeichert");
+  } catch (err) { toast(missingFn(err) ? "Fehler: project.sql in Supabase ausführen" : "Fehler: " + err.message); }
+  finally { $("manualSave").disabled = false; }
+};
+$("manualInput").addEventListener("keydown", e => {
+  if (e.key === "Tab") { // Tab-Taste fügt Einrückung ein
+    e.preventDefault(); const ta = e.target, s = ta.selectionStart;
+    ta.value = ta.value.slice(0,s) + "    " + ta.value.slice(ta.selectionEnd); ta.selectionStart = ta.selectionEnd = s + 4;
+  }
+  if (e.key === "s" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); $("manualSave").click(); }
+});
+
+/* Fenster & Tabs */
+function switchTab(tab){
+  proj.tab = tab;
+  document.querySelectorAll(".tab").forEach(b => b.classList.toggle("active", b.dataset.tab === tab));
+  $("paneGithub").classList.toggle("hidden", tab !== "github");
+  $("paneManual").classList.toggle("hidden", tab !== "manual");
+}
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => switchTab(b.dataset.tab));
+
+function openTree(){ $("treeModal").classList.remove("hidden"); setManualEditing(false); loadProject(false); }
+function closeTree(){
+  if (proj.manualEditing && !confirm("Ungespeicherte Änderungen verwerfen?")) return;
+  setManualEditing(false); $("treeModal").classList.add("hidden");
+}
+$("treeBtn").onclick = openTree;
+$("treeClose").onclick = closeTree;
+$("treeModal").addEventListener("mousedown", e => { if (e.target.id === "treeModal") closeTree(); });
+document.addEventListener("keydown", e => {
+  if (e.key !== "Escape" || $("treeModal").classList.contains("hidden")) return;
+  if (proj.manualEditing) setManualEditing(false); else closeTree();
+});
+
+$("treeFilter").addEventListener("input", renderTree);
+$("treeOpenAll").onclick = () => document.querySelectorAll("#treeView details").forEach(d => d.open = true);
+$("treeCloseAll").onclick = () => document.querySelectorAll("#treeView details").forEach(d => d.open = false);
+$("treeReload").onclick = () => loadProject(true);
+$("treeSettingsBtn").onclick = () => $("treeSettings").classList.toggle("hidden");
+$("repoSave").onclick = async () => {
+  const raw = $("repoInput").value.trim();
+  const repo = raw ? parseRepo(raw) : "";
+  if (raw && !repo) { toast("Format: besitzer/repo"); return; }
+  try {
+    await rpc("tb_project_set_repo", {p_code:state.code, p_repo:repo, p_branch:$("branchInput").value.trim()});
+    toast("Repository gespeichert"); $("treeSettings").classList.add("hidden");
+    loadProject(true);
+  } catch (err) { toast(missingFn(err) ? "Fehler: project.sql in Supabase ausführen" : "Fehler: " + err.message); }
+};
+["repoInput","branchInput"].forEach(id => $(id).addEventListener("keydown", e => { if (e.key === "Enter") $("repoSave").click(); }));
 
 /* ---------- Start ---------- */
 if (state.name && state.code && configured()) startApp(); else showLogin();
